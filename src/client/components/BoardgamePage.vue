@@ -79,6 +79,7 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'boardgame',
   mounted() {
+    $('.collapsible').collapsible()
     this.fetchData()
   },
   watch: {

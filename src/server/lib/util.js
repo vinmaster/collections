@@ -1,3 +1,4 @@
+const CircularJSON = require('circular-json')
 const Logger = require(process.cwd() + '/src/server/lib/logger')
 
 class Util {
@@ -32,7 +33,7 @@ class Util {
       meta: null,
       error: {
         message: err.message,
-        obj: err,
+        obj: CircularJSON.stringify(err),
         stack: err.stack
       }
     })
