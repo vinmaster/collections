@@ -1,7 +1,28 @@
 const CircularJSON = require('circular-json')
 const Logger = require(process.cwd() + '/src/server/lib/logger')
+const User = require(process.cwd() + '/src/server/models/user')
 
 class Util {
+  static asyncMiddleware(fn) {
+    return (req, res, next) => {
+      Promise.resolve(fn(req, res, next)).catch((err) => Util.renderErrorJson(res, err))
+    }
+  }
+
+  static authenticate(req, res, next) {
+    async function wrap() {
+      const accessToken = req.query.accessToken || req.body.accessToken
+      const user = await User.findOne({ accessToken })
+      if (user) {
+        req.user = user
+        next()
+      } else {
+        next(Util.createError('User not found'))
+      }
+    }
+    return wrap()
+  }
+
   // Success JSON
   static renderJson(res, response, meta = null) {
     return res.json({

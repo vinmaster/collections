@@ -4,6 +4,8 @@
       <div class="indigo nav-wrapper">
         <ul>
           <li><router-link to="/">Home</router-link></li>
+          <li v-show="!isLoggedIn"><router-link to="/login">Login</router-link></li>
+          <li v-show="isLoggedIn"><router-link to="/logout">Logout</router-link></li>
           <li><router-link to="/boardgames">Boardgames</router-link></li>
           <li><a class="dropdown-button" href="#!" data-activates="movies_dropdown">Movies<i class="material-icons right">arrow_drop_down</i></a></li>
           <li class="right"><router-link to="/search"><i class="material-icons">search</i></router-link></li>
@@ -23,8 +25,18 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'app',
+  computed: {
+    ...mapGetters([
+      'accessToken',
+    ]),
+    isLoggedIn() {
+      return this.accessToken !== ''
+    },
+  },
   mounted() {
     $(".dropdown-button").dropdown()
   }

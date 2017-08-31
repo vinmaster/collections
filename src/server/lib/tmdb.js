@@ -1,5 +1,7 @@
 const axios = require('axios')
+const moment = require('moment')
 const Db = require(process.cwd() + '/src/server/lib/db')
+const Movie = require(process.cwd() + '/src/server/models/movie')
 
 const API_URL = 'https://api.themoviedb.org/3'
 
@@ -45,12 +47,24 @@ class TMDB {
   }
 
   static async getMovieById(id) {
-    if (Db.movies[id]) { return Db.movies[id] }
-    const url = `${API_URL}/movie/${id}`
-    const response = await TMDB.makeRequest(url)
-    const json = response.data
-    Db.movies[id] = json
-    return json
+    let movie = await Movie.findOne({ id: id })
+    let isFromToday = false
+    if (movie) {
+      isFromToday = moment(movie.updatedAt).isSame(new Date(), 'day')
+    }
+    if (!movie || !isFromToday) {
+      const url = `${API_URL}/movie/${id}`
+      const response = await TMDB.makeRequest(url)
+      const json = response.data
+      // Check if new or needs update
+      if (!movie) {
+        movie = new Movie(json)
+      } else {
+        movie.set(json)
+      }
+      await movie.save()
+    }
+    return movie
   }
 
   static async getSimilarMovies(id) {

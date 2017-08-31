@@ -46,6 +46,10 @@
               <a class="indigo-text" style="font-weight: bold;" v-bind:href="'https://www.imdb.com/title/' + movie.imdb_id">IMDB Link</a>
             </li>
           </ul>
+          <div class="col m6 s12">
+            <a class="btn width100" v-show="!isInCollection" v-on:click="addToWatchlist(movie.id)">Add to Watchlist</a>
+            <a class="red btn width100" v-show="isInCollection" v-on:click="removeFromWatchlist(movie.id)">Remove from Watchlist</a>
+          </div>
         </div>
 
       </div>
@@ -63,29 +67,41 @@ export default {
     this.fetchData()
   },
   watch: {
-    '$route': 'fetchData'
+    '$route': 'fetchData',
   },
   computed: {
     ...mapGetters([
       'movies',
+      'accessToken',
+      'collections',
     ]),
     movie() {
       const id = this.$route.params.id
       const movie = this.movies[id] ? this.movies[id] : {}
-      console.log(movie)
       return movie
     },
     isEmpty() {
       return this.movie.original_title != undefined
-    }
+    },
+    isInCollection() {
+      if (this.collections && this.collections.moviesWatchList) {
+        return this.collections.moviesWatchList.some((movie) => movie.id === this.movie.id)
+      } else {
+        return false
+      }
+    },
   },
   methods: {
     ...mapActions([
       'fetchMovie',
+      'addToWatchlist',
+      'removeFromWatchlist',
+      'fetchMyCollections',
     ]),
     fetchData() {
       this.fetchMovie(this.$route.params.id)
-    }
+      this.fetchMyCollections()
+    },
   },
   data() {
     return {}
@@ -97,5 +113,8 @@ export default {
 span.badge {
   float: none !important;
   padding: 3px;
+}
+.width100 {
+  width: 100%;
 }
 </style>

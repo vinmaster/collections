@@ -4,7 +4,6 @@ const bodyParser = require('body-parser')
 const path = require('path')
 const webpackAssets = require('express-webpack-assets')
 const Logger = require(process.cwd() + '/src/server/lib/logger')
-const routes = require(process.cwd() + '/src/server/routes')
 const port = process.env.PORT || 8000
 const app = express() // Create express application
 const server = require('http').createServer(app)
@@ -61,6 +60,7 @@ if (app.get('env') === 'production') {
 app.use(express.static(process.cwd() + '/public'))
 
 // Register routes
+const routes = require(process.cwd() + '/src/server/routes')
 app.use('/', routes)
 
 // Set the view engine to ejs

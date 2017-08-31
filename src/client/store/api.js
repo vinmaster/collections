@@ -1,6 +1,9 @@
 import axios from 'axios'
 
 export default class Api {
+  static login(username, password) {
+    return axios.post('/api/users/login', { username, password })
+  }
   static getHotBoardgames() {
     return axios.get('/api/boardgames/hot')
   }
@@ -24,5 +27,16 @@ export default class Api {
   }
   static getMovie(id) {
     return axios.get(`/api/movies/${id}`)
+  }
+  static getMyCollections(accessToken) {
+    return axios.get('/api/users/collections', {
+      params: { accessToken },
+    })
+  }
+  static addToWatchlist(accessToken, id) {
+    return axios.post('/api/users/collections/addToWatchlist', { accessToken, id })
+  }
+  static removeFromWatchlist(accessToken, id) {
+    return axios.post('/api/users/collections/removeFromWatchlist', { accessToken, id })
   }
 }
